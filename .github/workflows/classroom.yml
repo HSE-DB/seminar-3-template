@@ -1,0 +1,110 @@
+name: Autograding Tests
+on:
+  - push
+  - workflow_dispatch
+  - repository_dispatch
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Check grading helpers
+        run: npm run test:helpers
+
+      # Максимум: 10 баллов. Теория — 1, каждая схема — 3.
+      # Проверки grading helpers выше в оценку не входят.
+
+      - name: "Наличие ответов на теорию"
+        id: theory
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: "Наличие ответов на теорию"
+          command: "node --test --test-name-pattern=^theory$ .tests/assignments.test.cjs"
+          timeout: 1
+          max-score: 1
+
+      - name: "Библиотека: таблицы, атрибуты и ключи"
+        id: library_structure
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: "Библиотека: таблицы, атрибуты и ключи"
+          command: "node --test --test-name-pattern=^library_structure$ .tests/assignments.test.cjs"
+          timeout: 1
+          max-score: 1
+
+      - name: "Библиотека: связи"
+        id: library_relationships
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: "Библиотека: связи"
+          command: "node --test --test-name-pattern=^library_relationships$ .tests/assignments.test.cjs"
+          timeout: 1
+          max-score: 2
+
+      - name: "Поезда: таблицы, атрибуты и ключи"
+        id: train_structure
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: "Поезда: таблицы, атрибуты и ключи"
+          command: "node --test --test-name-pattern=^train_structure$ .tests/assignments.test.cjs"
+          timeout: 1
+          max-score: 1
+
+      - name: "Поезда: связи"
+        id: train_relationships
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: "Поезда: связи"
+          command: "node --test --test-name-pattern=^train_relationships$ .tests/assignments.test.cjs"
+          timeout: 1
+          max-score: 2
+
+      - name: "Скорая помощь: таблицы, атрибуты и ключи"
+        id: ambulance_structure
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: "Скорая помощь: таблицы, атрибуты и ключи"
+          command: "node --test --test-name-pattern=^ambulance_structure$ .tests/assignments.test.cjs"
+          timeout: 1
+          max-score: 1
+
+      - name: "Скорая помощь: связи"
+        id: ambulance_relationships
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: "Скорая помощь: связи"
+          command: "node --test --test-name-pattern=^ambulance_relationships$ .tests/assignments.test.cjs"
+          timeout: 1
+          max-score: 2
+
+      - name: Report Results
+        if: always()
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          THEORY_RESULTS: ${{ steps.theory.outputs.result }}
+          LIBRARY_STRUCTURE_RESULTS: ${{ steps.library_structure.outputs.result }}
+          LIBRARY_RELATIONSHIPS_RESULTS: ${{ steps.library_relationships.outputs.result }}
+          TRAIN_STRUCTURE_RESULTS: ${{ steps.train_structure.outputs.result }}
+          TRAIN_RELATIONSHIPS_RESULTS: ${{ steps.train_relationships.outputs.result }}
+          AMBULANCE_STRUCTURE_RESULTS: ${{ steps.ambulance_structure.outputs.result }}
+          AMBULANCE_RELATIONSHIPS_RESULTS: ${{ steps.ambulance_relationships.outputs.result }}
+        with:
+          runners: "theory,library_structure,library_relationships,train_structure,train_relationships,ambulance_structure,ambulance_relationships"

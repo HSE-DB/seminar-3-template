@@ -2,9 +2,13 @@
 // Docs: https://dbml.dbdiagram.io/docs
 
 Table follows {
-  following_user_id integer
-  followed_user_id integer
+  following_user_id integer [not null]
+  followed_user_id integer [not null]
   created_at timestamp
+
+  indexes {
+    (following_user_id, followed_user_id) [pk]
+  }
 }
 
 Table users {

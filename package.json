@@ -1,0 +1,14 @@
+{
+  "name": "seminar-3-autograding",
+  "private": true,
+  "scripts": {
+    "test": "node --test .tests/assignments.test.cjs",
+    "test:helpers": "node --test .tests/helpers.test.cjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@dbml/core": "10.2.0"
+  }
+}
