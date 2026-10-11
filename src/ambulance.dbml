@@ -1,0 +1,56 @@
+
+Table Station {
+  StatNr integer [primary key]
+  Name varchar
+}
+
+Table StationPersonnel {
+  PersNr integer [primary key]
+  Name varchar
+  StatNr integer
+}
+
+Table Caregiver {
+  PersNr integer [primary key]
+  Qualification varchar
+}
+
+Table Doctor {
+  PersNr integer [primary key]
+  Area varchar
+  Rank varchar
+}
+
+Table Room {
+  StatNr integer [not null]
+  RoomNr integer [not null]
+  Beds integer
+
+  indexes {
+    (StatNr, RoomNr) [pk]
+  }
+}
+
+Table Patient {
+  PatientNr integer [primary key]
+  Name varchar
+  Disease varchar
+  DoctorPersNr integer
+}
+
+Table Admission {
+  AdmissionID integer [primary key]
+  PatientNr integer
+  StatNr integer
+  RoomNr integer
+  "from" date
+  "to" date
+}
+
+Ref: StationPersonnel.StatNr > Station.StatNr
+Ref: Caregiver.PersNr > StationPersonnel.PersNr
+Ref: Doctor.PersNr > StationPersonnel.PersNr
+Ref: Room.StatNr > Station.StatNr
+Ref: Patient.DoctorPersNr > Doctor.PersNr
+Ref: Admission.PatientNr > Patient.PatientNr
+Ref: Admission.(StatNr, RoomNr) > Room.(StatNr, RoomNr)
