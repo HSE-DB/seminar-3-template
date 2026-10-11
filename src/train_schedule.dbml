@@ -1,0 +1,35 @@
+Table Station {
+  Name varchar [primary key]
+  tracks_count integer
+  city_name varchar
+  city_region varchar
+  indexes {
+    (city_name, city_region)
+  }
+}
+
+Ref: Station.(city_name, city_region) > City.(Name, Region)
+
+Table City{
+  Name varchar
+  Region varchar
+  indexes {
+    (Name, Region) [pk]
+  }
+}
+
+Table Train {
+  TrainNr integer [primary key]
+  Length integer
+  start_station_name varchar [ref: > Station.Name]
+  end_station_name varchar [ref: > Station.Name]
+}
+
+Table Connected {
+  id integer [primary key, increment]
+  train_nr integer [ref: > Train.TrainNr]
+  from_station_name varchar [ref: > Station.Name]
+  to_station_name varchar [ref: > Station.Name]
+  Departure timestamp
+  Arrival timestamp
+}
