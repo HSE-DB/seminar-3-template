@@ -1,0 +1,36 @@
+Table City {
+    Name varchar
+    Region varchar
+    indexes {
+        (Name, Region) [pk]
+    }
+}
+
+Table Station {
+    Name varchar [pk]
+    Tracks int
+    CityName varchar
+    CityRegion varchar
+}
+
+Ref: Station.(CityName, CityRegion) > City.(Name, Region)
+
+Table Train {
+    TrainNr int [pk]
+    Length int
+    StartStation varchar [ref: > Station.Name]
+    EndStation varchar [ref: > Station.Name]
+}
+
+Table Connected {
+    FromStation varchar [ref: > Station.Name]
+    ToStation varchar [ref: > Station.Name]
+    TrainNr varchar [ref: > Train.TrainNr]
+    Departure timestamptz
+    Arrival timestamptz
+
+    indexes {
+        (FromStation, ToStation, TrainNr) [pk]
+    }
+
+}
